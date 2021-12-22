@@ -1,4 +1,6 @@
 import socket
+import keyboard
+
 
 class Client:
     def __init__(self):
@@ -8,14 +10,34 @@ class Client:
     def conn(self):
         self.sock.connect(self.server_address)
         try:
-            message = ""
-            while message != bytes("exit", "utf-8"):
-                message = bytes(input("dati text sper server"), 'utf-8')
-                self.sock.sendall(message)
-                data = self.sock.recv(1024)
-                print('primit {!r}'.format(data))
+            while True:
+                data = self.sock.recv(1024).decode('utf-8')
+                if data == 'client1':
+                    self.cuvant()
+                elif data == 'client2':
+                    self.ghiceste()
+                break
         finally:
             self.sock.close()
+
+    def cuvant(self):
+        self.sock.sendall(bytes(' ', 'utf-8'))
+        message = input(self.sock.recv(1024).decode('utf-8'))
+        self.sock.sendall(bytes(message, 'utf-8'))
+        message = input(self.sock.recv(1024).decode('utf-8'))
+        self.sock.sendall(bytes(message, 'utf-8'))
+
+    def ghiceste(self):
+        keyboard.wait('Ctrl')
+        self.sock.sendall(bytes(' ', 'utf-8'))
+        print(self.sock.recv(1024).decode('utf-8'))  # expresia
+        while True:
+            self.sock.sendall(bytes(input('Dati o litera: '), 'utf-8'))
+            message = self.sock.recv(1024).decode('utf-8')
+            print(message)
+            if 'Ai pierdut' in message or 'Ai castigat' in message:
+                break
+
 
 if __name__ == "__main__":
     client = Client()
