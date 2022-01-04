@@ -13,6 +13,7 @@ class Server:
         self.exp = ''
         self.connection1 = ''
         self.connection2 = ''
+        self.cuv_trimis = False
 
     def listen(self):
         self.sock.listen(5)
@@ -41,11 +42,14 @@ class Server:
                 connection.close()
 
     def ghiceste(self):
+        while not self.cuv_trimis:
+            a = 1  # tinem clientul 2 pe loc pana termina primul
         self.connection2.sendall(bytes('client2', 'utf-8'))
         self.connection2.recv(1024)
         incercari = int(len(self.word) / 2 + 1)
         self.connection2.sendall(bytes(self.exp, 'utf-8'))
         aux = self.new_word()
+        initial_word = self.word
         while True:
             message = ''
             ok = 0
@@ -70,7 +74,7 @@ class Server:
                 if incercari == 0:
                     ok = -1
                 if ok == -1:
-                    self.connection2.sendall(bytes(aux + message2, 'utf-8'))
+                    self.connection2.sendall(bytes('Cuvantul era: ' + initial_word + '\n' + message2, 'utf-8'))
                     break
                 else:
                     self.connection2.sendall(bytes(aux + message1, 'utf-8'))
@@ -90,6 +94,7 @@ class Server:
         self.word = self.connection1.recv(1024).decode('utf-8')
         self.connection1.sendall(bytes('Dati o mica definitie a cuvantului: ', 'utf-8'))
         self.exp = self.connection1.recv(1024).decode('utf-8')
+        self.cuv_trimis = True
 
 
 if __name__ == "__main__":

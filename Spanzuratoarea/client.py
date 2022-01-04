@@ -16,6 +16,8 @@ class Client:
                     self.cuvant()
                 elif data == 'client2':
                     self.ghiceste()
+                else:
+                    print(data)
                 break
         finally:
             self.sock.close()
@@ -28,7 +30,6 @@ class Client:
         self.sock.sendall(bytes(message, 'utf-8'))
 
     def ghiceste(self):
-        keyboard.wait('Ctrl')
         self.sock.sendall(bytes(' ', 'utf-8'))
         print(self.sock.recv(1024).decode('utf-8'))  # expresia
         while True:
